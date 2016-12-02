@@ -15,14 +15,16 @@ Leiningen:
 
 Compare to https://clojars.org/egamble/let-else
 
-The `and-let` macro is inspired by the Scheme `and-let*` function.
-Being honest to my own developer history, I wanted short-circuiting
-behavior for bindings in Clojure somewhat analagous to _optional
-chaining_ (https://en.wikipedia.org/wiki/Safe_navigation_operator) in
-Object-oriented languages like Swift and Objective-C.  Unlike Scheme I
-also wanted to support else conditions.  Evan Gamble's `let-else`
-provides the facility for _else_ handling for each individual binding.
-I wanted a typical blanket _else_ behavior instead.
+The `and-let` macro is quite similar to the Scheme `and-let*` special
+form.  Being honest about my own developer history, I wanted
+short-circuiting behavior for bindings in Clojure somewhat analagous
+to _optional chaining_
+(https://en.wikipedia.org/wiki/Safe_navigation_operator) in
+Object-oriented languages like Swift and Objective-C.  Unlike
+`and-let*` in Scheme, I also wanted to support else conditions.  Evan
+Gamble's `let-else` provides the facility for _else_ handling for each
+individual binding.  I wanted a typical blanket _else_ behavior
+instead.
 
 ``` Clojure
 (and-let [a (its)
@@ -32,6 +34,10 @@ I wanted a typical blanket _else_ behavior instead.
          (fire-dj)
          (dance))
 ```
+
+Evaluation of bindings stops should a binding evaluate
+falsey.  In the above example, `(my)` and `(disco)` will not be
+evaluated when `(not*)` evaluates falsey.
 
 ## Tests
 
