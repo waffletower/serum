@@ -20,11 +20,11 @@ form.  Being honest about my own developer history, I wanted
 short-circuiting behavior for bindings in Clojure somewhat analagous
 to _optional chaining_
 (https://en.wikipedia.org/wiki/Safe_navigation_operator) in
-Object-oriented languages like Swift and Objective-C.  Unlike
+object-oriented languages like Swift and Objective-C.  Unlike
 `and-let*` in Scheme, I also wanted to support else conditions.  Evan
-Gamble's `let-else` provides the facility for _else_ handling for each
-individual binding.  I wanted a typical blanket _else_ behavior
-instead.
+Gamble's richly featured `let-else` provides the facility for _else_
+handling for each individual binding.  I wanted a simple blanket
+_else_ behavior instead.
 
 ``` Clojure
 (and-let [a (its)
