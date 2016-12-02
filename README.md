@@ -13,7 +13,7 @@ Leiningen:
 
 #### and-let
 
-Compare to https://clojars.org/egamble/let-else
+Compare to: https://github.com/egamble/let-else
 
 The `and-let` macro is quite similar to the Scheme `and-let*` special
 form.  Being honest about my own developer history, I wanted
