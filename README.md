@@ -9,6 +9,32 @@ Leiningen:
 
 `(require [serum.core :refer :all])`
 
+#### and-let
+
+Compare to https://clojars.org/egamble/let-else
+
+The `and-let` macro is inspired by the Scheme `and-let*` function.
+Being honest to my own developer history, I wanted short-circuiting
+behavior for bindings in Clojure somewhat analagous to _optional
+chaining_ (https://en.wikipedia.org/wiki/Safe_navigation_operator) in
+Object-oriented languages like Swift and Objective-C.  Unlike Scheme I
+also wanted to support else conditions.  Evan Gamble's `let-else`
+provides the facility for _else_ handling for each individual binding.
+I wanted a typical blanket _else_ behavior in addition.
+
+``` Clojure
+(and-let [a (its)
+          b (not*)
+          c (my)
+          d (disco)]
+         (fire-dj)
+         (dance))
+```
+
+## Tests
+
+`lein midje`
+
 ## License
 
 Copyright © 2016 Christopher Penrose
