@@ -17,6 +17,14 @@
             d (mod (inc c) 10)
             e (* d 4)] e false) => 32)
 
+(fact "and-let bindings are available in expr"
+  (and-let [a (+ 4 7)
+            b (+ 3 8)
+            c (+ 2 9)
+            d (+ 1 10)
+            e 11]
+           (+ a b c d e)) => 55)
+
 ;; tunneled iteratively a little bit on this one, but it was late and I was still having fun
 (fact "explicit binding execution checks for and-let"
   (let [bark (atom 0)
