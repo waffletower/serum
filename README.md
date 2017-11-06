@@ -5,7 +5,7 @@ Clojure library of utility functions and macros
 ## Usage
 
 Leiningen:
-`[waffletower/serum "0.1.1"]`
+`[waffletower/serum "0.2.0"]`
 
 `(require [serum.core :refer :all])`
 
