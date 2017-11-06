@@ -25,3 +25,12 @@
   'else-expr' expression to be evaluated if any bindings evaluate falsey"
   ([bindings expr] `(and-let-core ~bindings ~expr))
   ([bindings expr else-expr] `(and-let-else-core ~bindings ~expr ~else-expr)))
+
+(defn shift
+  "similar to partial, provides a modified interface to function f,
+  returns a function which accepts a single argument, always passing it as the first argument of 'f'
+  useful with (comp) and threading macros"
+  ([f] f)
+  ([f arg2] (fn [arg1] (f arg1 arg2)))
+  ([f arg2 arg3] (fn [arg1] (f arg1 arg2 arg3)))
+  ([f arg2 arg3 arg4 & args] (fn [arg1] (apply f arg1 arg2 arg3 arg4 args))))
