@@ -39,13 +39,26 @@ Evaluation of bindings stops should a binding evaluate
 falsey.  In the above example, `(my)` and `(disco)` will not be
 evaluated when `(not*)` evaluates falsey.
 
+## Helpers
+
+#### shift
+
+The `shift` function is similar to `clojure.core/partial`. `shift`
+accepts a function `f` and returns a function of one argument mapped
+to the first argument of the function `f`:
+
+``` Clojure
+(map (comp (shift select-keys [:name :hat :shoe-size])
+    (partial filter friend?) my-people)
+```
+
 ## Tests
 
 `lein midje`
 
 ## License
 
-Copyright © 2016 Christopher Penrose
+Copyright © 2017 Christopher Penrose
 
 Distributed under the Eclipse Public License either version 1.0 or (at
 your option) any later version.
