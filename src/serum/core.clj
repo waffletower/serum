@@ -1,4 +1,5 @@
-(ns serum.core)
+(ns serum.core
+  (:require [slingshot.slingshot :refer [throw+]]))
 
 (defmacro and-let-core [bindings expr]
   (if (seq bindings)
@@ -34,3 +35,46 @@
   ([f arg2] (fn [arg1] (f arg1 arg2)))
   ([f arg2 arg3] (fn [arg1] (f arg1 arg2 arg3)))
   ([f arg2 arg3 arg4 & args] (fn [arg1] (apply f arg1 arg2 arg3 arg4 args))))
+
+(defmacro success-let
+  "conditional let form which expects binding expression to return a hashmap with {:success boolean} content
+  'success-let' supports a single binding pair: 'binding'
+  will evaluate 'expr' if (:success y#) is truthy,
+  will evaluate 'else' if (:success y#) is falsey
+  passes binding symbol/value to both 'expr' and 'else-expr' expressions"
+  ([binding expr]
+   `(success-let ~binding ~expr nil))
+  ([binding expr else-expr]
+   (let [bsym (binding 0)
+         bexpr (binding 1)]
+     `(let [y# ~bexpr
+            ~bsym y#]
+        (when (not (contains? y# :success))
+          (throw+ {:message "form evaluation result did not contain :success key"}))
+        (if (:success y#) ~expr ~else-expr)))))
+
+;; TODO improve to allow multiple forms as in when-let
+(defmacro fail-let
+  "conditional let form which expects binding expression to return a hashmap with {:success boolean} content
+  'fail-let' supports a single binding pair: 'binding'
+  will evaluate 'expr' if (:success y#) is falsey,
+  passes binding symbol/value to 'expr'"
+  [binding expr]
+  (let [bsym (binding 0)
+        bexpr (binding 1)]
+    `(let [y# ~bexpr
+           ~bsym y#]
+       (when (not (contains? y# :success))
+         (throw+ {:message "form evaluation result did not contain :success key"}))
+       (when (not (:success y#)) ~expr))))
+
+(defmacro try-true?
+  "the expression body is expected to be a validation form which returns booleanness.
+  body will be executed in a try/catch form and a boolean returned.
+  caught exceptions will return false"
+  [body]
+  `(try
+     (if ~body
+       true
+       false)
+     (catch Exception e# false)))
