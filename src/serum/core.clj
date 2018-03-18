@@ -78,3 +78,12 @@
        true
        false)
      (catch Exception e# false)))
+
+(defmacro attempt
+  "the expression 'expr' will be executed in a try/catch form.
+  if an exception is caught, a handler function of one argument, 'f', will be executed
+  and will be passed the caught java exception object."
+  [expr f]
+  `(try
+     ~expr
+     (catch Exception e# (~f e#))))

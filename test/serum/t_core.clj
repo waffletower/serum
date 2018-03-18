@@ -240,3 +240,12 @@
   (try-true? (when true true)) => true
   (try-true? (when true false)) => false
   (try-true? (when true nil)) => false)
+
+(fact "attempt"
+  (attempt true (fn [e] e)) => true
+  (attempt false (fn [e] e)) => false
+  (attempt nil (fn [e] e)) => nil
+  (attempt [] (fn [e] e)) => []
+  (attempt (/ 1 0) (fn [e] (.getMessage e))) => "Divide by zero"
+  (attempt (/ 1 0) (fn [e] nil)) => nil
+  (attempt (/ 1 2) (fn [e] e)) => 1/2)
