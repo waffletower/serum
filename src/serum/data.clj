@@ -117,42 +117,68 @@
     (keyword (f k))))
 
 (defn keys->kebabs
+  "deep recursive walk of 'form' via postwalk.
+  converts all hashmap keys into kebab-case style keywords.
+  preserves any namespaces in existing keyword keys."
   [form]
   (proc-keys (partial proc-ns-key ->kebab-case) form))
 
 (defn keys->HTTP-Header-Case
+  "deep recursive walk of 'form' via postwalk.
+  converts all hashmap keys into HTTP-Header-Case style keywords.
+  preserves any namespaces in existing keyword keys."
   [form]
   (proc-keys (partial proc-ns-key ->HTTP-Header-Case) form))
 
 (defn keys->camelCase
+  "deep recursive walk of 'form' via postwalk.
+  converts all hashmap keys into camelCase style keywords.
+  preserves any namespaces in existing keyword keys."
   [form]
   (proc-keys (partial proc-ns-key ->camelCase) form))
 
 (defn keys->PascalCase
+  "deep recursive walk of 'form' via postwalk.
+  converts all hashmap keys into PascalCase style keywords.
+  preserves any namespaces in existing keyword keys."
   [form]
   (proc-keys (partial proc-ns-key ->PascalCase) form))
 
 (defn keys->snake_case
+  "deep recursive walk of 'form' via postwalk.
+  converts all hashmap keys into snake_case style keywords.
+  preserves any namespaces in existing keyword keys."
   [form]
   (proc-keys (partial proc-ns-key ->snake_case) form))
 
 (defn keys->SCREAMING_SNAKE_CASE
+  "deep recursive walk of 'form' via postwalk.
+  converts all hashmap keys into SCREAMING_SNAKE_CASE style keywords.
+  preserves any namespaces in existing keyword keys."
   [form]
   (proc-keys (partial proc-ns-key ->SCREAMING_SNAKE_CASE) form))
 
 (defn keys->strings
+  "deep recursive walk of 'form' via postwalk.
+  converts all hashmap keys into strings.
+  pre-existing namespaces in keyword keys will be lost."
   [form]
   (proc-keys name form))
 
 (defn keys->keywords
+  "deep recursive walk of 'form' via postwalk.
+  converts all hashmap keys into keywords.
+  preserves any namespaces in existing keyword keys."
   [form]
-  (proc-keys keyword form))
+  (proc-keys (partial proc-ns-key identity) form))
 
 ;; aliases
-(defn keys->kebab-case
+(defn ^{:doc (:doc (meta #'keys->kebabs))}
+  keys->kebab-case
   [form]
   (keys->kebabs form))
 
-(defn keys->spinal-case
+(defn ^{:doc (:doc (meta #'keys->kebabs))}
+  keys->spinal-case
   [form]
   (keys->kebabs form))
