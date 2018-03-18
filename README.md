@@ -2,12 +2,10 @@
 
 Clojure library of utility functions and macros
 
-## Usage
+## Artifact
 
-Leiningen:
-`[waffletower/serum "0.2.0"]`
-
-`(require [serum.core :refer :all])`
+via Clojars:
+`[waffletower/serum "0.3.0"]`
 
 ## Macros
 
@@ -58,7 +56,7 @@ to the first argument of the function `f`:
 
 ## License
 
-Copyright © 2017 Christopher Penrose
+Copyright © 2017-2018 Christopher Penrose
 
 Distributed under the Eclipse Public License either version 1.0 or (at
 your option) any later version.
