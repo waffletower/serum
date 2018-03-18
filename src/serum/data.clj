@@ -92,6 +92,19 @@
    (for [[k v] form]
      [k (f v)])))
 
+(defn remap-keys
+  "similar to select-keys, remap-keys requires a hashmap, key-map, instead of a key-seq
+   The keys of keymap correspond to keys in 'm', while the values
+   of keymap correspond to keys in the resulting hashmap"
+  [m key-map]
+  (reduce
+   (fn [acc [k v]]
+     (if (contains? key-map k)
+       (assoc acc (get key-map k) v)
+       acc))
+   {}
+   m))
+
 (defn proc-ns-key
   "use a string processing function, f, to process a key, k
   also preserves namespace if the k is already a keyword

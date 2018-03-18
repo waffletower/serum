@@ -92,6 +92,42 @@
                                                       :geese {:total 5 :kids 3}
                                                       :ducks {:total 9 :kids 5}}})
 
+(fact "remap-keys"
+  (remap-keys
+   {:prime-minister "shambolic"}
+   {:prime-minister :president}) => {:president "shambolic"}
+  (remap-keys
+   {:prime-minister "shambolic"}
+   {:dentine :trident}) => {}
+  (remap-keys
+   {:pre-cambrian "devo"
+    :psionic-fiend "mind-flayer"
+    :garfunkle-says "sound-of-silence"}
+   {:pre-cambrian :post-kardashian
+    :garfunkle-says :single-payer}) => {:post-kardashian "devo"
+                                        :single-payer "sound-of-silence"}
+  (remap-keys
+   {:blodgett "staff-of-life"}
+   {}) => {}
+  (remap-keys
+   {:blodgett "staff-of-life"}
+   nil) => {}
+  (remap-keys
+   nil
+   {:your-comfort "second-concern"}) => {}
+  (remap-keys
+   {}
+   {}) => {}
+  (remap-keys
+   {}
+   nil) => {}
+  (remap-keys
+   nil
+   {}) => {}
+  (remap-keys
+   nil
+   nil) => {})
+
 (facts "camelCase, kebab-case, snake_case, PascalCase conversion"
   (let [kebab {:dental-floss {:proctor-gamble false :ashley-madison true :sample-hold {:meal-worm true}}}
         header {:Dental-Floss {:Proctor-Gamble false :Ashley-Madison true :Sample-Hold {:Meal-Worm true}}}
