@@ -69,12 +69,12 @@
        (when (not (:success y#)) ~expr))))
 
 (defmacro try-true?
-  "the expression 'expr' is expected to be a validation form which returns booleanness
-  'expr' will be executed in a try/catch form and a boolean returned
-  caught exceptions will return false"
-  [body]
+  "the expression 'expr' is expected to be a validation form which returns booleanness.
+  'expr' will be executed in a try/catch form and a boolean returned.
+  caught exceptions will return false."
+  [expr]
   `(try
-     (if ~body
+     (if ~expr
        true
        false)
      (catch Exception e# false)))
