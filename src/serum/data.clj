@@ -1,12 +1,12 @@
 (ns serum.data
   (:require [clojure.walk :refer [postwalk]]
-            [clojure.string :refer [lower-case]]
             [camel-snake-kebab.core :refer [->kebab-case
                                             ->HTTP-Header-Case
                                             ->camelCase
                                             ->PascalCase
                                             ->snake_case
-                                            ->SCREAMING_SNAKE_CASE]]))
+                                            ->SCREAMING_SNAKE_CASE]]
+            [serum.string :refer [casefree]]))
 
 (defn index-unique-maps
   "derives a map from a mapseq (sequence of maps).
@@ -91,17 +91,6 @@
    {}
    (for [[k v] form]
      [k (f v)])))
-
-(defn casefree
-  "case insensitive comparison.
-  (= nil nil) evaluates truthy"
-  [s1 s2]
-  (if (or
-       (not (string? s1))
-       (not (string? s2)))
-    (= s1 s2)
-    (= (lower-case s1)
-       (lower-case s2))))
 
 (defn proc-ns-key
   "use a string processing function, f, to process a key, k

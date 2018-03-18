@@ -92,19 +92,6 @@
                                                       :geese {:total 5 :kids 3}
                                                       :ducks {:total 9 :kids 5}}})
 
-(fact "casefree"
-  (casefree "" "") => true
-  (casefree "DUCK" "duck") => true
-  (casefree "GOOSE" "GOOSE") => true
-  (casefree "gainly" "gAiNlY") => true
-  (casefree nil "dead disco") => false
-  (casefree "dead funk" nil) => false
-  (casefree "dead rock & roll" "dead verismo") => false
-  (casefree nil nil) => true
-  (casefree 1 1) => true
-  (casefree [] []) => true
-  (casefree 2.71828 2.71828) => true)
-
 (facts "camelCase, kebab-case, snake_case, PascalCase conversion"
   (let [kebab {:dental-floss {:proctor-gamble false :ashley-madison true :sample-hold {:meal-worm true}}}
         header {:Dental-Floss {:Proctor-Gamble false :Ashley-Madison true :Sample-Hold {:Meal-Worm true}}}
