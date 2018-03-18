@@ -182,3 +182,12 @@
   keys->spinal-case
   [form]
   (keys->kebabs form))
+
+;; collection processing
+(defn rotate
+  "\"rotates\" a multi-dimensional collection (lazily).
+  stable behavior for equal-length collections."
+  [coll]
+  (if (empty? coll)
+    coll
+    (apply map list coll)))

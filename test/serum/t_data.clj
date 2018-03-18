@@ -197,3 +197,26 @@
     (keys->PascalCase m) => {:there.is.water/FlowingDown true}
     (keys->snake_case m) => {:there.is.water/flowing_down true}
     (keys->SCREAMING_SNAKE_CASE m) => {:there.is.water/FLOWING_DOWN true}))
+
+(fact "rotate"
+  (rotate nil) => nil
+  (rotate []) = []
+  (rotate [[]]) => []
+  (rotate [[1]]) => [[1]]
+  (rotate [[1 2 3]
+           [4 5 6]
+           [7 8 9]
+           [10 11 12]
+           [13 14 15]]) => '((1 4 7 10 13)
+                             (2 5 8 11 14)
+                             (3 6 9 12 15))
+  ;; simply demonstrate behavior for unequal length collections
+  (rotate [[1 2]
+           [3 4 5]
+           [6 7 8]]) => [[1 3 6] [2 4 7]]
+  (rotate [[1 2 3]
+           [4 5]
+           [6 7 8]]) => [[1 4 6] [2 5 7]]
+  (rotate [[1 2 3]
+           [4 5 6]
+           [7 8]]) => [[1 4 7] [2 5 8]])
