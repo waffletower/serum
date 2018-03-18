@@ -185,3 +185,15 @@
         keys->keywords
         keys->strings
         keys->keywords) => keyly))
+
+(fact "keyword namespace preservation tests"
+  (let [k :there.is.water/flowing-down
+        m {k true}]
+    (proc-ns-key identity k) => k
+    (keys->kebabs m) => m
+    (keys->keywords m) => m
+    (keys->HTTP-Header-Case m) => {:there.is.water/Flowing-Down true}
+    (keys->camelCase m) => {:there.is.water/flowingDown true}
+    (keys->PascalCase m) => {:there.is.water/FlowingDown true}
+    (keys->snake_case m) => {:there.is.water/flowing_down true}
+    (keys->SCREAMING_SNAKE_CASE m) => {:there.is.water/FLOWING_DOWN true}))
