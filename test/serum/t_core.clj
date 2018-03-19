@@ -117,3 +117,135 @@
   ((shift - 1 2 3 4) 5) => -5
   ((shift - 1 2 3 4 5) 6) => -9
   ((shift - 1 2 3 4 5 6) 7) => -14)
+
+(fact "success-let"
+  (success-let [peachy nil]
+               (assoc peachy :success true)
+               "wyatt earp") => (throws Throwable)
+  (success-let [slackful {:success true}]
+               (assoc slackful :advert "test it.")) => {:success true
+                                                        :advert "test it."}
+  (success-let [slackful {:success true}]
+               (assoc slackful :path "life balance")
+               (assoc slackful :path "sisyphus")) => {:success true
+                                                       :path "life balance"}
+  (success-let [encumbered {:success false}]
+               (assoc encumbered :success true)) => nil
+  (success-let [encumbered {:success false}]
+               (assoc encumbered :success true)
+               "I got a rock") => "I got a rock")
+
+(fact "fail-let"
+  (fail-let [peachy nil]
+            "wyatt earp") => (throws Throwable)
+  (fail-let [slackful {:success true}]
+            (assoc slackful :advert "test it.")) => nil
+  (fail-let [slackful {:success true}]
+            (assoc slackful :path "sisyphus")) => nil
+  (fail-let [encumbered {:success false}]
+            (assoc encumbered :tuber "rutabaga")) => {:success false
+                                                      :tuber "rutabaga"}
+  (fail-let [encumbered {:success false}]
+            "I got a rock") => "I got a rock")
+
+(let [colorizer (fn [m]
+                  (-> m
+                      (assoc :color "blue")
+                      (assoc :success true)))
+      weaponizer (fn [m]
+                   (-> m
+                       (assoc :weapon "doughnut")
+                       (assoc :success true)))
+      hipifier (fn [m]
+                 (-> m
+                     (assoc :outfit "beanie")
+                     (assoc :success true)))
+      love-infuser (fn [m]
+                     (-> m
+                         (assoc :success false)))]
+
+  (future-fact "success-> all succeeding list-free"
+               (success-> {}
+                          colorizer
+                          weaponizer
+                          hipifier) => {:success true
+                                        :color "blue"
+                                        :weapon "doughnut"
+                                        :outfit "beanie"})
+
+  (future-fact "success-> all succeeding list-full"
+               (success-> {}
+                          (colorizer)
+                          (weaponizer)
+                          (hipifier)) => {:success true
+                                          :color "blue"
+                                          :weapon "doughnut"
+                                          :outfit "beanie"})
+
+  (future-fact "success-> all succeeding list-full redux"
+               (success-> (colorizer {})
+                          (weaponizer)
+                          (hipifier)) => {:success true
+                                          :color "blue"
+                                          :weapon "doughnut"
+                                          :outfit "beanie"})
+
+  (future-fact "success-> first failure list-free"
+               (success-> {}
+                          love-infuser
+                          colorizer
+                          weaponizer
+                          hipifier) => {:success false})
+
+  (future-fact "success-> first failure list-full"
+               (success-> {}
+                          (love-infuser)
+                          (colorizer)
+                          (weaponizer)
+                          (hipifier)) => {:success false})
+
+  (future-fact "success-> final failure mixed listness"
+               (success-> (colorizer {})
+                          weaponizer
+                          hipifier
+                          love-infuser) => {:success false
+                                            :color "blue"
+                                            :weapon "doughnut"
+                                            :outfit "beanie"})
+
+  (future-fact "success-> final failure list-full"
+               (success-> {}
+                          (colorizer)
+                          (weaponizer)
+                          (hipifier)
+                          (love-infuser)) => {:success false
+                                              :color "blue"
+                                              :weapon "doughnut"
+                                              :outfit "beanie"})
+
+  (future-fact "success-> another failure possibility"
+               (success-> {}
+                          colorizer
+                          weaponizer
+                          love-infuser
+                          hipifier) => {:success false
+                                        :color "blue"
+                                        :weapon "doughnut"}))
+
+(facts "try-true?"
+  (try-true? (throw Exception)) => false
+  (try-true? true) => true
+  (try-true? false) => false
+  (try-true? nil) => false
+  (try-true? (when true true)) => true
+  (try-true? (when true false)) => false
+  (try-true? (when true nil)) => false)
+
+(fact "attempt"
+  (attempt true (fn [e] e)) => true
+  (attempt false (fn [e] e)) => false
+  (attempt nil (fn [e] e)) => nil
+  (attempt [] (fn [e] e)) => []
+  (attempt (/ 1 0) (fn [e] (.getMessage e))) => "Divide by zero"
+  (attempt (/ 1 0) (fn [e] nil)) => nil
+  (attempt (/ 1 2) (fn [e] e)) => 1/2)
