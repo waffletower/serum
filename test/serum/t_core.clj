@@ -164,7 +164,7 @@
                      (-> m
                          (assoc :success false)))]
 
-  (future-fact "success-> all succeeding list-free"
+  (fact "success-> all succeeding list-free"
                (success-> {}
                           colorizer
                           weaponizer
@@ -173,7 +173,7 @@
                                         :weapon "doughnut"
                                         :outfit "beanie"})
 
-  (future-fact "success-> all succeeding list-full"
+  (fact "success-> all succeeding list-full"
                (success-> {}
                           (colorizer)
                           (weaponizer)
@@ -182,7 +182,7 @@
                                           :weapon "doughnut"
                                           :outfit "beanie"})
 
-  (future-fact "success-> all succeeding list-full redux"
+  (fact "success-> all succeeding list-full redux"
                (success-> (colorizer {})
                           (weaponizer)
                           (hipifier)) => {:success true
@@ -190,21 +190,21 @@
                                           :weapon "doughnut"
                                           :outfit "beanie"})
 
-  (future-fact "success-> first failure list-free"
+  (fact "success-> first failure list-free"
                (success-> {}
                           love-infuser
                           colorizer
                           weaponizer
                           hipifier) => {:success false})
 
-  (future-fact "success-> first failure list-full"
+  (fact "success-> first failure list-full"
                (success-> {}
                           (love-infuser)
                           (colorizer)
                           (weaponizer)
                           (hipifier)) => {:success false})
 
-  (future-fact "success-> final failure mixed listness"
+  (fact "success-> final failure mixed listness"
                (success-> (colorizer {})
                           weaponizer
                           hipifier
@@ -213,7 +213,7 @@
                                             :weapon "doughnut"
                                             :outfit "beanie"})
 
-  (future-fact "success-> final failure list-full"
+  (fact "success-> final failure list-full"
                (success-> {}
                           (colorizer)
                           (weaponizer)
@@ -223,7 +223,7 @@
                                               :weapon "doughnut"
                                               :outfit "beanie"})
 
-  (future-fact "success-> another failure possibility"
+  (fact "success-> another failure possibility"
                (success-> {}
                           colorizer
                           weaponizer

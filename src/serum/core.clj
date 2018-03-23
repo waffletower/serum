@@ -87,3 +87,17 @@
   `(try
      ~expr
      (catch Exception e# (~f e#))))
+
+(defmacro success->
+  [x & forms]
+  (if forms
+    (let [form (first forms)
+          cur (if (seq? form)
+                `(~(first form) ~x ~@(next form))
+                (list form x))
+          nxt (next forms)]
+      `(success-let
+        [y# ~cur]
+        (success-> y# ~@nxt)
+        y#))
+    x))
