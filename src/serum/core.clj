@@ -94,10 +94,9 @@
     (let [form (first forms)
           cur (if (seq? form)
                 `(~(first form) ~x ~@(next form))
-                (list form x))
-          nxt (next forms)]
+                (list form x))]
       `(success-let
         [y# ~cur]
-        (success-> y# ~@nxt)
+        (success-> y# ~@(next forms))
         y#))
     x))
