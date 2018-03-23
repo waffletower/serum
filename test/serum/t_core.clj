@@ -148,21 +148,24 @@
   (fail-let [encumbered {:success false}]
             "I got a rock") => "I got a rock")
 
-(let [colorizer (fn [m]
-                  (-> m
-                      (assoc :color "blue")
-                      (assoc :success true)))
-      weaponizer (fn [m]
-                   (-> m
-                       (assoc :weapon "doughnut")
-                       (assoc :success true)))
-      hipifier (fn [m]
-                 (-> m
-                     (assoc :outfit "beanie")
-                     (assoc :success true)))
-      love-infuser (fn [m]
-                     (-> m
-                         (assoc :success false)))]
+(letfn [(colorizer [m]
+          (assoc m
+                 :color "blue"
+                 :success true))
+        (weaponizer [m]
+          (assoc m
+                 :weapon "doughnut"
+                 :success true))
+        (hipifier [m]
+          (assoc m
+                 :outfit "beanie"
+                 :success true))
+        (love-infuser [m]
+          (assoc m :success false))
+        (humidifier [m & args]
+          (assoc m
+                 :somesum (reduce + args)
+                 :success true))]
 
   (fact "success-> all succeeding list-free"
                (success-> {}
@@ -189,6 +192,16 @@
                                           :color "blue"
                                           :weapon "doughnut"
                                           :outfit "beanie"})
+
+  (fact "success-> success with multiple arguments"
+               (success-> (colorizer {})
+                          (weaponizer)
+                          (hipifier)
+                          (humidifier 123 74 82)) => {:success true
+                                                      :color "blue"
+                                                      :weapon "doughnut"
+                                                      :outfit "beanie"
+                                                      :somesum 279})
 
   (fact "success-> first failure list-free"
                (success-> {}
