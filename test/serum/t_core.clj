@@ -262,3 +262,9 @@
   (attempt (/ 1 0) (fn [e] (.getMessage e))) => "Divide by zero"
   (attempt (/ 1 0) (fn [e] nil)) => nil
   (attempt (/ 1 2) (fn [e] e)) => 1/2)
+
+(fact "divert"
+  (divert
+   (do
+     (print "escape-pod")
+     7)) => [7 "escape-pod"])

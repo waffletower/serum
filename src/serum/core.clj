@@ -100,3 +100,11 @@
         (success-> y# ~@(next forms))
         y#))
     x))
+
+(defmacro divert
+  "derived from (with-out-str).  Evaluates body, captures any output destined to *out*, and returns result
+  of body and text output as a vector tuple, [~@body captured-output-string]"
+  [& body]
+  `(let [s# (new java.io.StringWriter)]
+     (binding [*out* s#]
+       [~@body (str s#)])))
