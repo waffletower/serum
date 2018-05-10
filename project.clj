@@ -4,6 +4,7 @@
   :license {:name "Eclipse Public License"
             :url "http://www.eclipse.org/legal/epl-v10.html"}
   :dependencies [[org.clojure/clojure "1.9.0"]
+                 [org.clojure/core.async "0.4.474"]
                  [camel-snake-kebab "0.4.0"]
                  [slingshot "0.12.2"]]
   :deploy-repositories [["clojars-https" {:url "https://clojars.org/repo"
