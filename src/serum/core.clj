@@ -87,3 +87,24 @@
   `(try
      ~expr
      (catch Exception e# (~f e#))))
+
+(defmacro success->
+  [x & forms]
+  (if forms
+    (let [form (first forms)
+          cur (if (seq? form)
+                `(~(first form) ~x ~@(next form))
+                (list form x))]
+      `(success-let
+        [y# ~cur]
+        (success-> y# ~@(next forms))
+        y#))
+    x))
+
+(defmacro divert
+  "derived from (with-out-str).  Evaluates body, captures any output destined to *out*, and returns result
+  of body and text output as a vector tuple, [~@body captured-output-string]"
+  [& body]
+  `(let [s# (new java.io.StringWriter)]
+     (binding [*out* s#]
+       [~@body (str s#)])))
