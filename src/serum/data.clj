@@ -103,6 +103,15 @@
   [f form k]
   (proc-select-vals (select-key-proc f k) form))
 
+(defn proc-with-map
+  "deep recursive walk of `form`.
+  processes map entries by applying a function indexed by key from the given `key-fn-map`
+  to the current map entry value.
+  `key-fn-map` should be a hashmap which pairs keys and processing functions.
+  `form` - input data structure, presumably containing one or more hashmaps"
+  [key-fn-map form]
+  (proc-select-vals (select-key-fn-proc key-fn-map) form))
+
 (defn proc-top-keys
   "shallow hashmap key processor.  applies function, 'f' to hashmap keys within 'form'.
   'form' - input hashmap

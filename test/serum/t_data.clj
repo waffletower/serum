@@ -91,6 +91,19 @@
             :cutlery) => {:inventory {:animal "orca"
                                       :paint "rodda"
                                       :cutlery "FORK"}})
+(fact "proc-with-map"
+  (let [key-fn-map {:theremin inc
+                    :ondes-martenot dec}]
+    (proc-with-map key-fn-map
+                   {:theremin 1
+                    :ondes-martenot 1}) => {:theremin 2
+                                            :ondes-martenot 0}
+    (proc-with-map key-fn-map
+                   [{:basement [{:theremin 1
+                                 :ondes-martenot 1}
+                                {:echoplex 1}]}]) => [{:basement [{:theremin 2
+                                                                   :ondes-martenot 0}
+                                                                  {:echoplex 1}]}]))
 (fact "proc-top-keys"
   (proc-top-keys
    upper-case
