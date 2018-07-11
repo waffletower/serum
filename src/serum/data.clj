@@ -82,7 +82,7 @@
      [k (f k v)])
    form))
 
-(defn- match-key-proc
+(defn- select-key-proc
   [f ck]
   (fn [k v]
     (if (= k ck)
@@ -94,7 +94,7 @@
   `form` - input data structure, presumably containing one or more hashmaps
   `f` - a function of one variable, `v`, corresponding to the current hashmap value"
   [f form k]
-  (proc-select-vals (match-key-proc f k) form))
+  (proc-select-vals (select-key-proc f k) form))
 
 (defn proc-top-keys
   "shallow hashmap key processor.  applies function, 'f' to hashmap keys within 'form'.
