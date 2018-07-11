@@ -97,7 +97,8 @@
       v)))
 
 (defn proc-val
-  "deep recursive walk of `form`.  applies function, `f` to process any values for the key `k` that are nested within `form`.
+  "deep recursive walk of `form`.
+  applies function, `f` to process any values for the key `k` that are nested within `form`.
   `form` - input data structure, presumably containing one or more hashmaps
   `f` - a function of one variable, `v`, corresponding to the current hashmap value"
   [f form k]
