@@ -89,6 +89,13 @@
       (f v)
       v)))
 
+(defn- select-key-fn-proc
+  [m]
+  (fn [k v]
+    (if-let [f (get m k)]
+      (f v)
+      v)))
+
 (defn proc-val
   "deep recursive walk of `form`.  applies function, `f` to process any values for the key `k` that are nested within `form`.
   `form` - input data structure, presumably containing one or more hashmaps
