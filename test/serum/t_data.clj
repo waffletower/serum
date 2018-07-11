@@ -74,6 +74,23 @@
                                               :types {:swans {:total 4 :kids 3}
                                                       :geese {:total 6 :kids 4}
                                                       :ducks {:total 10 :kids 6}}})
+(fact "proc-val"
+  (proc-val upper-case
+            {:candy "lik-m-aid"
+             :drink "icee"
+             :store {:name "dunagrees"
+                     :candy "freshen up"}}
+            :candy) => {:candy "LIK-M-AID"
+            :drink "icee"
+            :store {:name "dunagrees"
+                    :candy "FRESHEN UP"}}
+  (proc-val upper-case
+            {:inventory {:animal "orca"
+                         :paint "rodda"
+                         :cutlery "fork"}}
+            :cutlery) => {:inventory {:animal "orca"
+                                      :paint "rodda"
+                                      :cutlery "FORK"}})
 (fact "proc-top-keys"
   (proc-top-keys
    upper-case

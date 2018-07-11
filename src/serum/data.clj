@@ -55,22 +55,46 @@
    form))
 
 (defn proc-keys
-  "deep recursive walk of 'form' via postwalk.  applies function, 'f' to hashmap keys nested within 'form'.
-  'form' - input data structure, presumably containing one or more hashmaps
-  'f' - a function of one variable, 'k', corresponding to the currently hashmap key"
+  "deep recursive walk of `form` via postwalk.  applies function, `f` to hashmap keys nested within `form`.
+  `form` - input data structure, presumably containing one or more hashmaps
+  `f` - a function of one variable, `k`, corresponding to the current hashmap key"
   [f form]
   (proc-map
    (fn [[k v]] [(f k) v])
    form))
 
 (defn proc-vals
-  "deep recursive walk of 'form' via postwalk.  applies function, 'f' to hashmap values nested within 'form'.
-  'form' - input data structure, presumably containing one or more hashmaps
-  'f' - a function of one variable, 'v', corresponding to the current hashmap value"
+  "deep recursive walk of `form` via postwalk.  applies function, `f` to hashmap values nested within `form`.
+  `form` - input data structure, presumably containing one or more hashmaps
+  `f` - a function of one variable, `v`, corresponding to the current hashmap value"
   [f form]
   (proc-map
    (fn [[k v]] [k (f v)])
    form))
+
+(defn proc-select-vals
+  "deep recursive walk of `form` via postwalk.  applies function, `f` to hashmap values nested within `form`.
+  `form` - input data structure, presumably containing one or more hashmaps
+  `f` - a function of two variables, `k` and `v`, corresponding to the individual values of the current map entry being processed"
+  [f form]
+  (proc-map
+   (fn [[k v]]
+     [k (f k v)])
+   form))
+
+(defn- match-key-proc
+  [f ck]
+  (fn [k v]
+    (if (= k ck)
+      (f v)
+      v)))
+
+(defn proc-val
+  "deep recursive walk of `form`.  applies function, `f` to process any values for the key `k` that are nested within `form`.
+  `form` - input data structure, presumably containing one or more hashmaps
+  `f` - a function of one variable, `v`, corresponding to the current hashmap value"
+  [f form k]
+  (proc-select-vals (match-key-proc f k) form))
 
 (defn proc-top-keys
   "shallow hashmap key processor.  applies function, 'f' to hashmap keys within 'form'.
