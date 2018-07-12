@@ -148,23 +148,26 @@
   (fail-let [encumbered {:success false}]
             "I got a rock") => "I got a rock")
 
-(let [colorizer (fn [m]
-                  (-> m
-                      (assoc :color "blue")
-                      (assoc :success true)))
-      weaponizer (fn [m]
-                   (-> m
-                       (assoc :weapon "doughnut")
-                       (assoc :success true)))
-      hipifier (fn [m]
-                 (-> m
-                     (assoc :outfit "beanie")
-                     (assoc :success true)))
-      love-infuser (fn [m]
-                     (-> m
-                         (assoc :success false)))]
+(letfn [(colorizer [m]
+          (assoc m
+                 :color "blue"
+                 :success true))
+        (weaponizer [m]
+          (assoc m
+                 :weapon "doughnut"
+                 :success true))
+        (hipifier [m]
+          (assoc m
+                 :outfit "beanie"
+                 :success true))
+        (love-infuser [m]
+          (assoc m :success false))
+        (humidifier [m & args]
+          (assoc m
+                 :somesum (reduce + args)
+                 :success true))]
 
-  (future-fact "success-> all succeeding list-free"
+  (fact "success-> all succeeding list-free"
                (success-> {}
                           colorizer
                           weaponizer
@@ -173,7 +176,7 @@
                                         :weapon "doughnut"
                                         :outfit "beanie"})
 
-  (future-fact "success-> all succeeding list-full"
+  (fact "success-> all succeeding list-full"
                (success-> {}
                           (colorizer)
                           (weaponizer)
@@ -182,7 +185,7 @@
                                           :weapon "doughnut"
                                           :outfit "beanie"})
 
-  (future-fact "success-> all succeeding list-full redux"
+  (fact "success-> all succeeding list-full redux"
                (success-> (colorizer {})
                           (weaponizer)
                           (hipifier)) => {:success true
@@ -190,21 +193,31 @@
                                           :weapon "doughnut"
                                           :outfit "beanie"})
 
-  (future-fact "success-> first failure list-free"
+  (fact "success-> success with multiple arguments"
+               (success-> (colorizer {})
+                          (weaponizer)
+                          (hipifier)
+                          (humidifier 123 74 82)) => {:success true
+                                                      :color "blue"
+                                                      :weapon "doughnut"
+                                                      :outfit "beanie"
+                                                      :somesum 279})
+
+  (fact "success-> first failure list-free"
                (success-> {}
                           love-infuser
                           colorizer
                           weaponizer
                           hipifier) => {:success false})
 
-  (future-fact "success-> first failure list-full"
+  (fact "success-> first failure list-full"
                (success-> {}
                           (love-infuser)
                           (colorizer)
                           (weaponizer)
                           (hipifier)) => {:success false})
 
-  (future-fact "success-> final failure mixed listness"
+  (fact "success-> final failure mixed listness"
                (success-> (colorizer {})
                           weaponizer
                           hipifier
@@ -213,7 +226,7 @@
                                             :weapon "doughnut"
                                             :outfit "beanie"})
 
-  (future-fact "success-> final failure list-full"
+  (fact "success-> final failure list-full"
                (success-> {}
                           (colorizer)
                           (weaponizer)
@@ -223,7 +236,7 @@
                                               :weapon "doughnut"
                                               :outfit "beanie"})
 
-  (future-fact "success-> another failure possibility"
+  (fact "success-> another failure possibility"
                (success-> {}
                           colorizer
                           weaponizer
@@ -249,3 +262,9 @@
   (attempt (/ 1 0) (fn [e] (.getMessage e))) => "Divide by zero"
   (attempt (/ 1 0) (fn [e] nil)) => nil
   (attempt (/ 1 2) (fn [e] e)) => 1/2)
+
+(fact "divert"
+  (divert
+   (do
+     (print "escape-pod")
+     7)) => [7 "escape-pod"])
