@@ -74,6 +74,36 @@
                                               :types {:swans {:total 4 :kids 3}
                                                       :geese {:total 6 :kids 4}
                                                       :ducks {:total 10 :kids 6}}})
+(fact "proc-val"
+  (proc-val upper-case
+            {:candy "lik-m-aid"
+             :drink "icee"
+             :store {:name "dunagrees"
+                     :candy "freshen up"}}
+            :candy) => {:candy "LIK-M-AID"
+            :drink "icee"
+            :store {:name "dunagrees"
+                    :candy "FRESHEN UP"}}
+  (proc-val upper-case
+            {:inventory {:animal "orca"
+                         :paint "rodda"
+                         :cutlery "fork"}}
+            :cutlery) => {:inventory {:animal "orca"
+                                      :paint "rodda"
+                                      :cutlery "FORK"}})
+(fact "proc-with-map"
+  (let [key-fn-map {:theremin inc
+                    :ondes-martenot dec}]
+    (proc-with-map key-fn-map
+                   {:theremin 1
+                    :ondes-martenot 1}) => {:theremin 2
+                                            :ondes-martenot 0}
+    (proc-with-map key-fn-map
+                   [{:basement [{:theremin 1
+                                 :ondes-martenot 1}
+                                {:echoplex 1}]}]) => [{:basement [{:theremin 2
+                                                                   :ondes-martenot 0}
+                                                                  {:echoplex 1}]}]))
 (fact "proc-top-keys"
   (proc-top-keys
    upper-case

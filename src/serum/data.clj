@@ -10,10 +10,10 @@
 
 (defn index-unique-maps
   "derives a map from a mapseq (sequence of maps).
-  utilizes an index specified by keypath, 'ks', as keys for the resulting map.
+  utilizes an index specified by keypath, `ks`, as keys for the resulting map.
   assumes that each indexed map value is unique.
   when duplicate keys are present, last duplicate keyed map will be present in result.
-  an optional 'key-proc' parameter is provide to allow key processing of each indexing key
+  an optional `key-proc` parameter is provide to allow key processing of each indexing key
   (such as forcing the case of each index via clojure.string/lower-case, for example)."
   [ms ks & {:keys [key-proc]
             :or {key-proc identity}}]
@@ -28,9 +28,9 @@
 
 (defn index-maps
   "derives a map from a mapseq (sequence of maps).
-  utilizes an index specified by keypath, 'ks', as keys for the resulting map.
+  utilizes an index specified by keypath, `ks`, as keys for the resulting map.
   indexed maps need not be unique.  returned maps are grouped in a list for each unique index.
-  an optional 'key-proc' parameter is provide to allow key processing of each indexing key
+  an optional `key-proc` parameter is provide to allow key processing of each indexing key
   (such as forcing the case of each index via clojure.string/lower-case, for example)."
   [ms ks & {:keys [key-proc]
             :or {key-proc identity}}]
@@ -44,8 +44,8 @@
    ms))
 
 (defn proc-map
-  "deep recursive walk of 'form' via postwalk.
-  each mapentry within 'form' will be processed via the function 'f'."
+  "deep recursive walk of `form` via postwalk.
+  each mapentry within `form` will be processed via the function `f`."
   [f form]
   (postwalk
    (fn [cur]
@@ -55,22 +55,63 @@
    form))
 
 (defn proc-keys
-  "deep recursive walk of 'form' via postwalk.  applies function, 'f' to hashmap keys nested within 'form'.
-  'form' - input data structure, presumably containing one or more hashmaps
-  'f' - a function of one variable, 'k', corresponding to the currently hashmap key"
+  "deep recursive walk of `form` via postwalk.  applies function, `f` to hashmap keys nested within `form`.
+  `form` - input data structure, presumably containing one or more hashmaps
+  `f` - a function of one variable, `k`, corresponding to the current hashmap key"
   [f form]
   (proc-map
    (fn [[k v]] [(f k) v])
    form))
 
 (defn proc-vals
-  "deep recursive walk of 'form' via postwalk.  applies function, 'f' to hashmap values nested within 'form'.
-  'form' - input data structure, presumably containing one or more hashmaps
-  'f' - a function of one variable, 'v', corresponding to the current hashmap value"
+  "deep recursive walk of `form` via postwalk.  applies function, `f` to hashmap values nested within `form`.
+  `form` - input data structure, presumably containing one or more hashmaps
+  `f` - a function of one variable, `v`, corresponding to the current hashmap value"
   [f form]
   (proc-map
    (fn [[k v]] [k (f v)])
    form))
+
+(defn proc-select-vals
+  "deep recursive walk of `form` via postwalk.  applies function, `f` to hashmap values nested within `form`.
+  `form` - input data structure, presumably containing one or more hashmaps
+  `f` - a function of two variables, `k` and `v`, corresponding to the individual values of the current map entry being processed"
+  [f form]
+  (proc-map
+   (fn [[k v]]
+     [k (f k v)])
+   form))
+
+(defn- select-key-proc
+  [f ck]
+  (fn [k v]
+    (if (= k ck)
+      (f v)
+      v)))
+
+(defn- select-key-fn-proc
+  [m]
+  (fn [k v]
+    (if-let [f (get m k)]
+      (f v)
+      v)))
+
+(defn proc-val
+  "deep recursive walk of `form`.
+  applies function, `f` to process any values for the key `k` that are nested within `form`.
+  `form` - input data structure, presumably containing one or more hashmaps
+  `f` - a function of one variable, `v`, corresponding to the current hashmap value"
+  [f form k]
+  (proc-select-vals (select-key-proc f k) form))
+
+(defn proc-with-map
+  "deep recursive walk of `form`.
+  processes map entries by applying a function indexed by key from the given `key-fn-map`
+  to the current map entry value.
+  `key-fn-map` should be a hashmap which pairs keys and processing functions.
+  `form` - input data structure, presumably containing one or more hashmaps"
+  [key-fn-map form]
+  (proc-select-vals (select-key-fn-proc key-fn-map) form))
 
 (defn proc-top-keys
   "shallow hashmap key processor.  applies function, 'f' to hashmap keys within 'form'.
