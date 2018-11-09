@@ -108,3 +108,52 @@
   `(let [s# (new java.io.StringWriter)]
      (binding [*out* s#]
        [~@body (str s#)])))
+
+(defn find-pred
+  "applies `pred` to each element of a collection, `coll`, until it returns a truthy value,
+  then returns the matching element (*not* the individual value).  Compare with `clojure.core/some`"
+  [pred coll]
+  (reduce
+   (fn [_ cur]
+     (when (pred cur)
+       (reduced cur)))
+   nil
+   coll))
+
+(defn find-key-val
+  "searches `mapseq` for an element with a matching key/value pair.
+  The key is specified by `k`, and the value is specified by `v`."
+  [k v mapseq]
+  (find-pred
+   (comp
+    (shift = v)
+    (shift get k))
+   mapseq))
+
+(defn within?
+  "is \"x\" in \"coll\"?
+  has signature and semantics of `contains?`.
+  matches elements rather than indices of indexed collections.
+  `coll` collection which is source of comparison.
+  `x` target comparison value.
+  `fun` comparison function (defaults to `=`).
+  `within?` has arguably more consistent semantics for collections than `contains?`:
+  `(contains? [4 5 6] 4) => falsey`
+  `(contains? '(4 5 6) 4) => truthy`
+  `(within? [4 5 6] 4) => truthy`
+  `(within? '(4 5 6) 4) => truthy`"
+  ([coll x] (within? coll = x))
+  ([coll fun x]
+   (some #(fun x %) coll)))
+
+(defn wrap-within-fn
+  "convenience function which returns a lambda intended for `within?` comparisons.
+  `fun` to process all comparison arguments.
+  `compare-fn` function to perform comparison"
+  ([fun]
+   (wrap-within-fn = fun))
+  ([compare-fn fun]
+   (fn [& args]
+     (->> args
+          (map fun)
+          (apply compare-fn)))))
