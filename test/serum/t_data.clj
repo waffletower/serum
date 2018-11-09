@@ -5,48 +5,51 @@
 
 (fact "index-unique-maps"
   (index-unique-maps
-   [{:duckling "mallard"} {:duckling "mighty"}] [:duck]) => {}
+   :duck
+   [{:duckling "mallard"} {:duckling "mighty"}]) => {}
   (index-unique-maps
-   [{:part "SOLENOID"}] [:part]) => {"SOLENOID" {:part "SOLENOID"}}
+   :part
+   [{:part "SOLENOID"}]) => {"SOLENOID" {:part "SOLENOID"}}
   (index-unique-maps
-   [{:part "HEAD GASKET"}]
-   [:part]
-   :key-proc lower-case) => {"head gasket" {:part "HEAD GASKET"}}
+   lower-case
+   :part
+   [{:part "HEAD GASKET"}]) => {"head gasket" {:part "HEAD GASKET"}}
   (index-unique-maps
+   :sauce
    [{:sauce "habenero" :scovilles :moderate}
     {:sauce "ghost" :scovilles :high}
     {:sauce "pequena" :scovilles :high}
-    {:sauce "pequena" :scovilles :moderate}]
-   [:sauce]) => {"habenero" {:sauce "habenero" :scovilles :moderate}
-                 "ghost" {:sauce "ghost" :scovilles :high}
-                 "pequena" {:sauce "pequena" :scovilles :moderate}})
+    {:sauce "pequena" :scovilles :moderate}]) => {"habenero" {:sauce "habenero" :scovilles :moderate}
+               "ghost" {:sauce "ghost" :scovilles :high}
+               "pequena" {:sauce "pequena" :scovilles :moderate}})
 
 (facts "index-maps"
   (index-maps
-   [{:part "SOLENOID"}] [:part]) => {"SOLENOID" [{:part "SOLENOID"}]}
+   :part
+   [{:part "SOLENOID"}]) => {"SOLENOID" [{:part "SOLENOID"}]}
   (index-maps
-   [{:part "HEAD GASKET"}]
-   [:part]
-   :key-proc lower-case) => {"head gasket" [{:part "HEAD GASKET"}]}
+   lower-case
+   :part
+   [{:part "HEAD GASKET"}]) => {"head gasket" [{:part "HEAD GASKET"}]}
   (index-maps
+   lower-case
+   :part
    [{:part "dirty trogg cloth"
      :model 1}
     {:part "Dirty Trogg Cloth"
-     :model 2}]
-   [:part]
-   :key-proc lower-case) => {"dirty trogg cloth" [{:part "Dirty Trogg Cloth"
+     :model 2}]) => {"dirty trogg cloth" [{:part "Dirty Trogg Cloth"
                                                    :model 2}
                                                   {:part "dirty trogg cloth"
                                                    :model 1}]}
   (index-maps
+   :sauce
    [{:sauce "habenero" :scovilles :moderate}
     {:sauce "ghost" :scovilles :high}
     {:sauce "pequena" :scovilles :high}
-    {:sauce "pequena" :scovilles :moderate}]
-   [:sauce]) => {"habenero" [{:sauce "habenero" :scovilles :moderate}]
-                 "ghost" [{:sauce "ghost" :scovilles :high}]
-                 "pequena" [{:sauce "pequena" :scovilles :moderate}
-                            {:sauce "pequena" :scovilles :high}]})
+    {:sauce "pequena" :scovilles :moderate}]) => {"habenero" [{:sauce "habenero" :scovilles :moderate}]
+                                                  "ghost" [{:sauce "ghost" :scovilles :high}]
+                                                  "pequena" [{:sauce "pequena" :scovilles :moderate}
+                                                             {:sauce "pequena" :scovilles :high}]})
 
 (fact "proc-keys"
   (proc-keys

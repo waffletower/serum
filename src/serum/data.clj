@@ -10,38 +10,38 @@
 
 (defn index-unique-maps
   "derives a map from a mapseq (sequence of maps).
-  utilizes an index specified by keypath, `ks`, as keys for the resulting map.
+  utilizes an index specified by key, `k`, as keys for the resulting map.
   assumes that each indexed map value is unique.
   when duplicate keys are present, last duplicate keyed map will be present in result.
-  an optional `key-proc` parameter is provide to allow key processing of each indexing key
+  the optional `key-proc` parameter allows key processing of each indexing key
   (such as forcing the case of each index via clojure.string/lower-case, for example)."
-  [ms ks & {:keys [key-proc]
-            :or {key-proc identity}}]
-  (reduce
-   (fn [acc m]
-     (if-let [k (-> (get-in m ks)
-                    key-proc)]
-       (assoc acc k m)
-       acc))
-   {}
-   ms))
+  ([k ms] (index-unique-maps identity k ms))
+  ([key-proc k ms]
+   (reduce
+    (fn [acc m]
+      (if-let [pk (-> (get m k)
+                      key-proc)]
+        (assoc acc pk m)
+        acc))
+    {}
+    ms)))
 
 (defn index-maps
   "derives a map from a mapseq (sequence of maps).
-  utilizes an index specified by keypath, `ks`, as keys for the resulting map.
+  utilizes an index specified by key, `k`, as keys for the resulting map.
   indexed maps need not be unique.  returned maps are grouped in a list for each unique index.
   an optional `key-proc` parameter is provide to allow key processing of each indexing key
   (such as forcing the case of each index via clojure.string/lower-case, for example)."
-  [ms ks & {:keys [key-proc]
-            :or {key-proc identity}}]
-  (reduce
-   (fn [acc m]
-     (if-let [k (-> (get-in m ks)
-                    key-proc)]
-       (update acc k conj m)
-       acc))
-   {}
-   ms))
+  ([k ms] (index-maps identity k ms))
+  ([key-proc k ms]
+   (reduce
+    (fn [acc m]
+      (if-let [pk (-> (get m k)
+                      key-proc)]
+        (update acc pk conj m)
+        acc))
+    {}
+    ms)))
 
 (defn proc-map
   "deep recursive walk of `form` via postwalk.
