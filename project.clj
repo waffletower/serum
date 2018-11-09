@@ -1,4 +1,4 @@
-(defproject waffletower/serum "0.5.0"
+(defproject waffletower/serum "0.6.0"
   :description "Clojure library of utility functions and macros"
   :url "https://github.com/waffletower/serum"
   :license {:name "Eclipse Public License"

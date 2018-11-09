@@ -268,3 +268,37 @@
    (do
      (print "escape-pod")
      7)) => [7 "escape-pod"])
+
+;; find-key-val test exercises `find-pred` at least
+(future-fact "find-pred")
+
+(fact "find-key-val"
+  (find-key-val :a 33 [{:a 11 :b 22} {:a 33 :b 44} {:a 33 :b 55}]) => {:a 33 :b 44}
+  (find-key-val :a 22 [{:a 11 :b 22} {:a 33 :b 44} {:a 33 :b 55}]) => nil
+  (find-key-val :a 22 [{:a 11 :b 22} {:a 33 :b 44} {:a 33 :b 55}]) => nil
+  (find-key-val :a nil [{:a 11 :b 22} {:a 33 :b 44} {:a 33 :b 55}]) => nil
+  (find-key-val nil 2 [{:a 11 :b 22} {:a 33 :b 44} {:a 33 :b 55}]) => nil
+  (find-key-val :a 2 nil) => nil
+  (find-key-val :a nil nil) => nil
+  (find-key-val nil 2 nil) => nil
+  (find-key-val nil nil nil) => nil
+  (find-key-val nil nil [{:a 11 :b 22} {:a 33 :b 44} {:a 33 :b 55}]) => {:a 11 :b 22})
+
+(fact "within?"
+  (within? nil 1) => falsey
+  (within? [4 5 6] nil) => falsey
+  (within? nil nil) => falsey
+  (within? [4 5 6] 1) => falsey
+  (within? [4 5 6] 4) => truthy
+  (within? [4 5 6] 6) => truthy
+  (within? '(4 5 6) 1) => falsey
+  (within? '(4 5 6) 4) => truthy
+  (within? '(4 5 6) 6) => truthy
+  (within?
+   ["duck" "spork"]
+   (wrap-within-fn clojure.string/lower-case)
+   "SPORK") => truthy
+  (within?
+   ["duck" "spork"]
+   (wrap-within-fn = clojure.string/lower-case)
+   "BARN") => falsey)
