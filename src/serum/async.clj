@@ -22,6 +22,20 @@
           (a/close! channel#)
           true)))))
 
+;; `throw-exceptions`, `<?` and `<??` adapted from:
+;; http://martintrojer.github.io/clojure/2014/03/09/working-with-coreasync-exceptions-in-go-blocks
+
+(defn throw-exceptions [x]
+  (when (instance? Throwable x)
+    (throw x))
+  x)
+
+(defmacro <? [channel]
+  `(throw-exceptions (a/<! ~channel)))
+
+(defmacro <?? [channel]
+  `(throw-exceptions (a/<!! ~channel)))
+
 (defn chan->seq
   "recursive function which derives a lazy sequence from a core.async channel, 'channel'"
   [channel]
