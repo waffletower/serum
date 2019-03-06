@@ -49,6 +49,7 @@
   "an asynchronous implementation of `map`
   returns a lazy sequence of the asynchronous evaluation of `f` applied to members of the collection `coll`
   will block until all asynchronous evaluation completes.
+  Intended for use on main thread.
   `f` single-argument function
   `n` parallelization parameter
   `coll` collection applied to the function `f`"
@@ -65,7 +66,13 @@
       n
       output-channel
       (fn [x c]
-        (a/>!! c (f x))
+        (let [fx (try
+                   (f x)
+                   (catch Throwable e
+                     (do
+                       (a/close! input-channel)
+                       e)))]
+          (a/>!! c fx))
         (a/close! c))
       input-channel)
      (chan->seq output-channel))))
