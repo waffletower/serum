@@ -37,10 +37,12 @@
   `(throw-exceptions (a/<!! ~channel)))
 
 (defn chan->seq
-  "recursive function which derives a lazy sequence from a core.async channel, 'channel'"
+  "recursive function which derives a lazy sequence from a core.async channel, `channel`.
+  Intended for use on main thread."
   [channel]
   (lazy-seq
-   (when-let [took (a/<!! channel)]
+     ;; the reflection within `<??` shouldn't be too slow for many use cases
+   (when-let [took (<?? channel)]
      (cons took (chan->seq channel)))))
 
 (defn map-async
