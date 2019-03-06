@@ -46,12 +46,12 @@
      (cons took (chan->seq channel)))))
 
 (defn map-async
-  "an asynchronous implementation of 'map'
-  returns a lazy sequence of the asynchronous evaluation of 'f' applied to members of the collection 'coll'
-  will block until all asynchronous evaluation completes
-  'f' single-argument function
-  'n' parallelization parameter
-  'coll' collection applied to the function 'f'"
+  "an asynchronous implementation of `map`
+  returns a lazy sequence of the asynchronous evaluation of `f` applied to members of the collection `coll`
+  will block until all asynchronous evaluation completes.
+  `f` single-argument function
+  `n` parallelization parameter
+  `coll` collection applied to the function `f`"
   ([f coll]
    (map-async
     f
