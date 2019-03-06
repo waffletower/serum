@@ -22,8 +22,16 @@
   (a/onto-chan
    channel
    ["progress" "ridge" "ottoman"])
-  (fact "chan->seq"
+  (fact "chan->seq happy path"
     (doall (chan->seq channel)) => ["progress" "ridge" "ottoman"]))
 
-(fact "map-async"
-  (doall (map-async lower-case ["Cubby" "Slime" "Cache"])) => ["cubby" "slime" "cache"])
+(let [channel (a/chan)]
+  (a/onto-chan
+   channel
+   ["progress" "ridge" (Exception. "not quite sure what went wrong") "ottoman"])
+  (fact "chan->seq throws any exception object encounter on input channel"
+    (doall (chan->seq channel)) => (throws Exception)))
+
+(facts "map-async"
+  (doall (map-async lower-case ["Cubby" "Slime" "Cache"])) => ["cubby" "slime" "cache"]
+  (doall (map-async (partial / 1) [1 0 2])) => (throws Exception))

@@ -1,11 +1,11 @@
 # serum
 
-Clojure library of utility functions and macros
+Clojure library of sundry utility functions and macros
 
 ## Artifact
 
 via Clojars:
-`[waffletower/serum "0.6.0"]`
+`[waffletower/serum "0.7.0"]`
 
 ## Macros
 

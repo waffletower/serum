@@ -22,20 +22,37 @@
           (a/close! channel#)
           true)))))
 
+;; `throw-exceptions`, `<?` and `<??` adapted from:
+;; http://martintrojer.github.io/clojure/2014/03/09/working-with-coreasync-exceptions-in-go-blocks
+
+(defn throw-exceptions [x]
+  (when (instance? Throwable x)
+    (throw x))
+  x)
+
+(defmacro <? [channel]
+  `(throw-exceptions (a/<! ~channel)))
+
+(defmacro <?? [channel]
+  `(throw-exceptions (a/<!! ~channel)))
+
 (defn chan->seq
-  "recursive function which derives a lazy sequence from a core.async channel, 'channel'"
+  "recursive function which derives a lazy sequence from a core.async channel, `channel`.
+  Intended for use on main thread."
   [channel]
   (lazy-seq
-   (when-let [took (a/<!! channel)]
+     ;; the reflection within `<??` shouldn't be too slow for many use cases
+   (when-let [took (<?? channel)]
      (cons took (chan->seq channel)))))
 
 (defn map-async
-  "an asynchronous implementation of 'map'
-  returns a lazy sequence of the asynchronous evaluation of 'f' applied to members of the collection 'coll'
-  will block until all asynchronous evaluation completes
-  'f' single-argument function
-  'n' parallelization parameter
-  'coll' collection applied to the function 'f'"
+  "an asynchronous implementation of `map`
+  returns a lazy sequence of the asynchronous evaluation of `f` applied to members of the collection `coll`
+  will block until all asynchronous evaluation completes.
+  Intended for use on main thread.
+  `f` single-argument function
+  `n` parallelization parameter
+  `coll` collection applied to the function `f`"
   ([f coll]
    (map-async
     f
@@ -49,7 +66,13 @@
       n
       output-channel
       (fn [x c]
-        (a/>!! c (f x))
+        (let [fx (try
+                   (f x)
+                   (catch Throwable e
+                     (do
+                       (a/close! input-channel)
+                       e)))]
+          (a/>!! c fx))
         (a/close! c))
       input-channel)
      (chan->seq output-channel))))
