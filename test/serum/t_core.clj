@@ -121,7 +121,7 @@
 (fact "success-let"
   (success-let [peachy nil]
                (assoc peachy :success true)
-               "wyatt earp") => (throws Throwable)
+               "wyatt earp") => (throws Exception)
   (success-let [slackful {:success true}]
                (assoc slackful :advert "test it.")) => {:success true
                                                         :advert "test it."}
@@ -137,7 +137,7 @@
 
 (fact "fail-let"
   (fail-let [peachy nil]
-            "wyatt earp") => (throws Throwable)
+            "wyatt earp") => (throws Exception)
   (fail-let [slackful {:success true}]
             (assoc slackful :advert "test it.")) => nil
   (fail-let [slackful {:success true}]

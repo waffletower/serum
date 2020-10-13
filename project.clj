@@ -6,7 +6,6 @@
   :dependencies [[org.clojure/clojure "1.10.1"]
                  [org.clojure/core.async "1.3.610"]
                  [camel-snake-kebab "0.4.1"]
-                 [slingshot "0.12.2"]
                  [com.taoensso/timbre "4.10.0"]]
   :deploy-repositories [["clojars-https" {:url "https://clojars.org/repo"
                                           :username :env/clojars_user

@@ -1,5 +1,4 @@
-(ns serum.core
-  (:require [slingshot.slingshot :refer [throw+]]))
+(ns serum.core)
 
 (defmacro and-let-core [bindings expr]
   (if (seq bindings)
@@ -50,7 +49,7 @@
      `(let [y# ~bexpr
             ~bsym y#]
         (when (not (contains? y# :success))
-          (throw+ {:message "form evaluation result did not contain :success key"}))
+          (throw (Exception. "form evaluation result did not contain :success key")))
         (if (:success y#) ~expr ~else-expr)))))
 
 ;; TODO improve to allow multiple forms as in when-let
@@ -65,7 +64,7 @@
     `(let [y# ~bexpr
            ~bsym y#]
        (when (not (contains? y# :success))
-         (throw+ {:message "form evaluation result did not contain :success key"}))
+         (throw (Exception. "form evaluation result did not contain :success key")))
        (when (not (:success y#)) ~expr))))
 
 (defmacro try-true?
