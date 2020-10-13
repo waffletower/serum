@@ -119,6 +119,7 @@
    nil
    coll))
 
+
 (defn find-key-val
   "searches `mapseq` for an element with a matching key/value pair.
   The key is specified by `k`, and the value is specified by `v`."
@@ -156,3 +157,23 @@
      (->> args
           (map fun)
           (apply compare-fn)))))
+
+(defn do-once
+  "Returns a closure which will execute the passed function, `fun`, once.
+  Subsequent calls will return cached results of the function call.
+  `fun` is expected to be a function without arguments.
+   The initial result of evaluating `fun` will always be returned.
+  Different caches can be maintained simply by using separate invocations of `do-once`"
+  [fun]
+  (let [cache (atom nil)]
+    (fn []
+      (compare-and-set! cache nil (delay (fun)))
+      @@cache)))
+
+(defn set-var-root
+  "convenience interface to `clojure.core/alter-var-root`.
+  with the semantic of `clojure.core/reset!`, will rebind a value, `value` to a var `v`.
+  `v` - a var reference (e.g. `#'state-example`).
+  `value` - new value to bind to var `v`."
+  [v value]
+  (alter-var-root v (fn [_] value)))

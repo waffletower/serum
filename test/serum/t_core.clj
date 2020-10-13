@@ -302,3 +302,13 @@
    ["duck" "spork"]
    (wrap-within-fn = clojure.string/lower-case)
    "BARN") => falsey)
+
+(future-fact "write tests demonstrating thread-safety for `do-once`")
+
+(let [ca (atom 0)
+      cl (do-once (fn [] (swap! ca inc) (+ 4 @ca)))]
+  (fact "do-once"
+    (cl) => 5
+    @ca => 1
+    (cl) => 5
+    @ca => 1))
