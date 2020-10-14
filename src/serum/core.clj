@@ -1,15 +1,19 @@
 (ns serum.core)
 
-(defmacro and-let-core [bindings expr]
+
+(defmacro and-let-core
+  [bindings expr]
   (if (seq bindings)
     `(if-let [~(first bindings) ~(second bindings)]
        (and-let-core ~(drop 2 bindings) ~expr))
     expr))
 
-(defmacro and-let-else-core [bindings expr else-expr]
+
+(defmacro and-let-else-core
+  [bindings expr else-expr]
   (if (seq bindings)
     `(if-let
-         [~(first bindings) ~(second bindings)]
+       [~(first bindings) ~(second bindings)]
        (and-let-else-core ~(drop 2 bindings) ~expr ~else-expr)
        ~else-expr)
     expr))
@@ -26,6 +30,7 @@
   ([bindings expr] `(and-let-core ~bindings ~expr))
   ([bindings expr else-expr] `(and-let-else-core ~bindings ~expr ~else-expr)))
 
+
 (defn shift
   "similar to partial, provides a modified interface to function `f`.
   returns a function which accepts a single argument, always passing it as the first argument of `f`.
@@ -34,6 +39,7 @@
   ([f arg2] (fn [arg1] (f arg1 arg2)))
   ([f arg2 arg3] (fn [arg1] (f arg1 arg2 arg3)))
   ([f arg2 arg3 arg4 & args] (fn [arg1] (apply f arg1 arg2 arg3 arg4 args))))
+
 
 (defmacro success-let
   "conditional let form which expects binding expression to return a hashmap with {:success boolean} content.
@@ -67,6 +73,7 @@
          (throw (Exception. "form evaluation result did not contain :success key")))
        (when (not (:success y#)) ~expr))))
 
+
 (defmacro try-true?
   "the expression `expr` is expected to be a validation form which returns booleanness.
   `expr` will be executed in a try/catch form and a boolean returned.
@@ -78,6 +85,7 @@
        false)
      (catch Exception e# false)))
 
+
 (defmacro attempt
   "the expression `expr` will be executed in a try/catch form.
   if an exception is caught, a handler function of one argument, `f`, will be executed
@@ -87,6 +95,7 @@
      ~expr
      (catch Exception e# (~f e#))))
 
+
 (defmacro success->
   [x & forms]
   (if forms
@@ -95,10 +104,11 @@
                 `(~(first form) ~x ~@(next form))
                 (list form x))]
       `(success-let
-        [y# ~cur]
-        (success-> y# ~@(next forms))
-        y#))
+         [y# ~cur]
+         (success-> y# ~@(next forms))
+         y#))
     x))
+
 
 (defmacro divert
   "derived from (with-out-str).  Evaluates body, captures any output destined to *out*, and returns result
@@ -108,16 +118,17 @@
      (binding [*out* s#]
        [~@body (str s#)])))
 
+
 (defn find-pred
   "applies `pred` to each element of a collection, `coll`, until it returns a truthy value,
   then returns the matching element (*not* the individual value).  Compare with `clojure.core/some`"
   [pred coll]
   (reduce
-   (fn [_ cur]
-     (when (pred cur)
-       (reduced cur)))
-   nil
-   coll))
+    (fn [_ cur]
+      (when (pred cur)
+        (reduced cur)))
+    nil
+    coll))
 
 
 (defn find-key-val
@@ -125,10 +136,11 @@
   The key is specified by `k`, and the value is specified by `v`."
   [k v mapseq]
   (find-pred
-   (comp
-    (shift = v)
-    (shift get k))
-   mapseq))
+    (comp
+      (shift = v)
+      (shift get k))
+    mapseq))
+
 
 (defn within?
   "is \"x\" in \"coll\"?
@@ -146,6 +158,7 @@
   ([coll fun x]
    (some #(fun x %) coll)))
 
+
 (defn wrap-within-fn
   "convenience function which returns a lambda intended for `within?` comparisons.
   `fun` to process all comparison arguments.
@@ -158,6 +171,7 @@
           (map fun)
           (apply compare-fn)))))
 
+
 (defn do-once
   "Returns a closure which will execute the passed function, `fun`, once.
   Subsequent calls will return cached results of the function call.
@@ -169,6 +183,7 @@
     (fn []
       (compare-and-set! cache nil (delay (fun)))
       @@cache)))
+
 
 (defn set-var-root
   "convenience interface to `clojure.core/alter-var-root`.
