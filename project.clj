@@ -5,8 +5,8 @@
             :url "http://www.eclipse.org/legal/epl-v10.html"}
   :dependencies [[org.clojure/clojure "1.10.1"]
                  [org.clojure/core.async "1.3.610"]
-                 [camel-snake-kebab "0.4.1"]
-                 [com.taoensso/timbre "4.10.0"]]
+                 [org.clojure/tools.logging "1.1.0"]
+                 [camel-snake-kebab "0.4.1"]]
   :deploy-repositories [["clojars-https" {:url "https://clojars.org/repo"
                                           :username :env/clojars_user
                                           :password :env/clojars_password}]]

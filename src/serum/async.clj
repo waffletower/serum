@@ -1,7 +1,7 @@
 (ns serum.async
   (:require
     [clojure.core.async :as a]
-    [taoensso.timbre :as log]))
+    [clojure.tools.logging :as log]))
 
 
 (defmacro fire!
