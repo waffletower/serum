@@ -5,7 +5,7 @@ Clojure library of sundry utility functions and macros
 ## Artifact
 
 via Clojars:
-`[waffletower/serum "0.7.0"]`
+`[waffletower/serum "0.8.0"]`
 
 ## Macros
 
