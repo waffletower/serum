@@ -1,12 +1,14 @@
 (ns serum.data
-  (:require [clojure.walk :refer [postwalk]]
-            [camel-snake-kebab.core :refer [->kebab-case
+  (:require
+    [camel-snake-kebab.core :refer [->kebab-case
                                             ->HTTP-Header-Case
                                             ->camelCase
                                             ->PascalCase
                                             ->snake_case
                                             ->SCREAMING_SNAKE_CASE]]
-            [serum.string :refer [casefree]]))
+    [clojure.walk :refer [postwalk]]
+    [serum.string :refer [casefree]]))
+
 
 (defn index-unique-maps
   "derives a map from a mapseq (sequence of maps).
@@ -18,13 +20,14 @@
   ([k ms] (index-unique-maps identity k ms))
   ([key-proc k ms]
    (reduce
-    (fn [acc m]
-      (if-let [pk (-> (get m k)
-                      key-proc)]
-        (assoc acc pk m)
-        acc))
-    {}
-    ms)))
+     (fn [acc m]
+       (if-let [pk (-> (get m k)
+                       key-proc)]
+         (assoc acc pk m)
+         acc))
+     {}
+     ms)))
+
 
 (defn index-maps
   "derives a map from a mapseq (sequence of maps).
@@ -35,24 +38,26 @@
   ([k ms] (index-maps identity k ms))
   ([key-proc k ms]
    (reduce
-    (fn [acc m]
-      (if-let [pk (-> (get m k)
-                      key-proc)]
-        (update acc pk conj m)
-        acc))
-    {}
-    ms)))
+     (fn [acc m]
+       (if-let [pk (-> (get m k)
+                       key-proc)]
+         (update acc pk conj m)
+         acc))
+     {}
+     ms)))
+
 
 (defn proc-map
   "deep recursive walk of `form` via postwalk.
   each mapentry within `form` will be processed via the function `f`."
   [f form]
   (postwalk
-   (fn [cur]
-     (if (map? cur)
-       (into {} (map f cur))
-       cur))
-   form))
+    (fn [cur]
+      (if (map? cur)
+        (into {} (map f cur))
+        cur))
+    form))
+
 
 (defn proc-keys
   "deep recursive walk of `form` via postwalk.  applies function, `f` to hashmap keys nested within `form`.
@@ -60,8 +65,9 @@
   `f` - a function of one variable, `k`, corresponding to the current hashmap key"
   [f form]
   (proc-map
-   (fn [[k v]] [(f k) v])
-   form))
+    (fn [[k v]] [(f k) v])
+    form))
+
 
 (defn proc-vals
   "deep recursive walk of `form` via postwalk.  applies function, `f` to hashmap values nested within `form`.
@@ -69,8 +75,9 @@
   `f` - a function of one variable, `v`, corresponding to the current hashmap value"
   [f form]
   (proc-map
-   (fn [[k v]] [k (f v)])
-   form))
+    (fn [[k v]] [k (f v)])
+    form))
+
 
 (defn proc-select-vals
   "deep recursive walk of `form` via postwalk.  applies function, `f` to hashmap values nested within `form`.
@@ -78,9 +85,10 @@
   `f` - a function of two variables, `k` and `v`, corresponding to the individual values of the current map entry being processed"
   [f form]
   (proc-map
-   (fn [[k v]]
-     [k (f k v)])
-   form))
+    (fn [[k v]]
+      [k (f k v)])
+    form))
+
 
 (defn- select-key-proc
   [f ck]
@@ -89,12 +97,14 @@
       (f v)
       v)))
 
+
 (defn- select-key-fn-proc
   [m]
   (fn [k v]
     (if-let [f (get m k)]
       (f v)
       v)))
+
 
 (defn proc-val
   "deep recursive walk of `form`.
@@ -103,6 +113,7 @@
   `f` - a function of one variable, `v`, corresponding to the current hashmap value"
   [f form k]
   (proc-select-vals (select-key-proc f k) form))
+
 
 (defn proc-with-map
   "deep recursive walk of `form`.
@@ -113,15 +124,17 @@
   [key-fn-map form]
   (proc-select-vals (select-key-fn-proc key-fn-map) form))
 
+
 (defn proc-top-keys
   "shallow hashmap key processor.  applies function, 'f' to hashmap keys within 'form'.
   'form' - input hashmap
   'f' - a function of one variable, 'k', corresponding to the current hashmap key"
   [f form]
   (into
-   {}
-   (for [[k v] form]
-     [(f k) v])))
+    {}
+    (for [[k v] form]
+      [(f k) v])))
+
 
 (defn proc-top-vals
   "shallow hashmap key processor.  applies function, 'f' to hashmap values within 'form'.
@@ -129,9 +142,10 @@
   'f' - a function of one variable, 'v', corresponding to the current hashmap value"
   [f form]
   (into
-   {}
-   (for [[k v] form]
-     [k (f v)])))
+    {}
+    (for [[k v] form]
+      [k (f v)])))
+
 
 (defn remap-keys
   "similar to select-keys, remap-keys requires a hashmap, key-map, instead of a key-seq.
@@ -139,12 +153,13 @@
    of keymap correspond to keys in the resulting hashmap."
   [m key-map]
   (reduce
-   (fn [acc [k v]]
-     (if (contains? key-map k)
-       (assoc acc (get key-map k) v)
-       acc))
-   {}
-   m))
+    (fn [acc [k v]]
+      (if (contains? key-map k)
+        (assoc acc (get key-map k) v)
+        acc))
+    {}
+    m))
+
 
 (defn proc-ns-key
   "use a string processing function, 'f', to process a key, 'k'.
@@ -157,12 +172,14 @@
       (keyword ns (f nm)))
     (keyword (f k))))
 
+
 (defn keys->kebabs
   "deep recursive walk of 'form' via postwalk.
   converts all hashmap keys into kebab-case style keywords.
   preserves any namespaces in existing keyword keys."
   [form]
   (proc-keys (partial proc-ns-key ->kebab-case) form))
+
 
 (defn keys->HTTP-Header-Case
   "deep recursive walk of 'form' via postwalk.
@@ -171,12 +188,14 @@
   [form]
   (proc-keys (partial proc-ns-key ->HTTP-Header-Case) form))
 
+
 (defn keys->camelCase
   "deep recursive walk of 'form' via postwalk.
   converts all hashmap keys into camelCase style keywords.
   preserves any namespaces in existing keyword keys."
   [form]
   (proc-keys (partial proc-ns-key ->camelCase) form))
+
 
 (defn keys->PascalCase
   "deep recursive walk of 'form' via postwalk.
@@ -185,12 +204,14 @@
   [form]
   (proc-keys (partial proc-ns-key ->PascalCase) form))
 
+
 (defn keys->snake_case
   "deep recursive walk of 'form' via postwalk.
   converts all hashmap keys into snake_case style keywords.
   preserves any namespaces in existing keyword keys."
   [form]
   (proc-keys (partial proc-ns-key ->snake_case) form))
+
 
 (defn keys->SCREAMING_SNAKE_CASE
   "deep recursive walk of 'form' via postwalk.
@@ -199,12 +220,14 @@
   [form]
   (proc-keys (partial proc-ns-key ->SCREAMING_SNAKE_CASE) form))
 
+
 (defn keys->strings
   "deep recursive walk of 'form' via postwalk.
   converts all hashmap keys into strings.
   pre-existing namespaces in keyword keys will be lost."
   [form]
   (proc-keys name form))
+
 
 (defn keys->keywords
   "deep recursive walk of 'form' via postwalk.
@@ -218,6 +241,7 @@
   keys->kebab-case
   [form]
   (keys->kebabs form))
+
 
 (defn ^{:doc (:doc (meta #'keys->kebabs))}
   keys->spinal-case
