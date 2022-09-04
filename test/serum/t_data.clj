@@ -55,29 +55,35 @@
                                                                    {:sauce "pequena" :scovilles :high}]})
 
 (fact "sorted-map-desc"
-      (sorted-map-desc
-        :habenero 2
-        :chile-de-arbol 1
-        :pasilla 4
-        :ancho 3) =>
-      (array-map
-        :pasilla 4
-        :ancho 3
-        :habenero 2
-        :chile-de-arbol 1))
+      (vec
+        (sorted-map-desc
+          (array-map
+            :habenero 2
+            :chile-de-arbol 1
+            :pasilla 4
+            :ancho 3))) =>
+      (vec
+        (array-map
+          :pasilla 4
+          :ancho 3
+          :habenero 2
+          :chile-de-arbol 1)))
 
 
 (fact "sorted-map-asc"
-      (sorted-map-desc
-        :habenero 2
-        :chile-de-arbol 1
-        :pasilla 4
-        :ancho 3) =>
-      (array-map
-        :chile-de-arbol 1
-        :habenero 2
-        :ancho 3
-        :pasilla 4))
+      (vec
+        (sorted-map-asc
+          (array-map
+            :habenero 2
+            :chile-de-arbol 1
+            :pasilla 4
+            :ancho 3))) =>
+      (vec
+        (array-map
+            :chile-de-arbol 1
+            :habenero 2
+            :ancho 3
+            :pasilla 4)))
 
 
 (fact "proc-keys"

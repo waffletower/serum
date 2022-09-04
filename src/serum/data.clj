@@ -48,27 +48,25 @@
 
 
 (defn sorted-map-desc
-  "create a sorted-map sorting by descending value."
-  [& keyvals]
-  (let [m (apply hash-map keyvals)]
-    (apply
-      sorted-map-by
-      (fn [k1 k2]
-        (compare [(get m k2) k2]
-                 [(get m k1) k1]))
-      keyvals)))
+  "create a sorted-map sorting by descending value from an pre-existing map `m`."
+  [m]
+  (apply
+    sorted-map-by
+    (fn [k1 k2]
+      (compare [(get m k2) k2]
+               [(get m k1) k1]))
+    (apply concat m)))
 
 
 (defn sorted-map-asc
-  "create a sorted-map sorting by ascending value."
-  [& keyvals]
-  (let [m (apply hash-map keyvals)]
-    (apply
-      sorted-map-by
-      (fn [k1 k2]
-        (compare [(get m k1) k1]
-                 [(get m k2) k2]))
-      keyvals)))
+  "create a sorted-map sorting by ascending value from a pre-existing map `m`."
+  [m]
+  (apply
+    sorted-map-by
+    (fn [k1 k2]
+      (compare [(get m k1) k1]
+               [(get m k2) k2]))
+    (apply concat m)))
 
 
 (defn proc-map
