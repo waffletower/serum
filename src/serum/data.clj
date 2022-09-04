@@ -1,13 +1,13 @@
 (ns serum.data
   (:require
-    [camel-snake-kebab.core :refer [->kebab-case
-                                            ->HTTP-Header-Case
-                                            ->camelCase
-                                            ->PascalCase
-                                            ->snake_case
-                                            ->SCREAMING_SNAKE_CASE]]
-    [clojure.walk :refer [postwalk]]
-    [serum.string :refer [casefree]]))
+   [camel-snake-kebab.core :refer [->kebab-case
+                                   ->HTTP-Header-Case
+                                   ->camelCase
+                                   ->PascalCase
+                                   ->snake_case
+                                   ->SCREAMING_SNAKE_CASE]]
+   [clojure.walk :refer [postwalk]]
+   [serum.string :refer [casefree]]))
 
 
 (defn index-unique-maps
@@ -45,6 +45,30 @@
          acc))
      {}
      ms)))
+
+
+(defn sorted-map-desc
+  "create a sorted-map sorting by descending value."
+  [& keyvals]
+  (let [m (apply hash-map keyvals)]
+    (apply
+      sorted-map-by
+      (fn [k1 k2]
+        (compare [(get m k2) k2]
+                 [(get m k1) k1]))
+      keyvals)))
+
+
+(defn sorted-map-asc
+  "create a sorted-map sorting by ascending value."
+  [& keyvals]
+  (let [m (apply hash-map keyvals)]
+    (apply
+      sorted-map-by
+      (fn [k1 k2]
+        (compare [(get m k1) k1]
+                 [(get m k2) k2]))
+      keyvals)))
 
 
 (defn proc-map
