@@ -71,17 +71,16 @@
    (let [input-channel (a/chan n)
          output-channel (a/chan n)]
      (a/onto-chan input-channel coll)
-     (a/pipeline-async
+     (a/pipeline-blocking
        n
        output-channel
-       (fn [x c]
-         (let [fx (try
-                    (f x)
-                    (catch Throwable e
-                      (do
-                        (a/close! input-channel)
-                        e)))]
-           (a/>!! c fx))
-         (a/close! c))
+       (map
+         (fn [x]
+           (try
+             (f x)
+             (catch Throwable e
+               (do
+                 (a/close! input-channel)
+                 e)))))
        input-channel)
      (chan->seq output-channel))))
