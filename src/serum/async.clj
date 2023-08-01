@@ -1,11 +1,10 @@
 (ns serum.async
   (:require
-    [clojure.core.async :as a]
-    [clojure.tools.logging :as log]))
-
+    [clojure.core.async :as a])
+  (:import (java.util.concurrent Executors)))
 
 (defmacro fire!
-  "execute 'body' on an asynchronous worker thread via a core.async channel.
+  "execute 'body' on an asynchronous worker thread.
   (fire! and forget)"
   [body]
   `(a/go
@@ -19,8 +18,8 @@
                Throwable
                exception#
                (do
-                 (log/error "fire! caught exception on worker thread:")
-                 (log/error exception#))))
+                 (println (str "fire! caught exception on worker thread: " (Thread/currentThread)))
+                 (println exception#))))
            (a/close! channel#)
            true)))))
 
@@ -84,3 +83,29 @@
                  e)))))
        input-channel)
      (chan->seq output-channel))))
+
+
+;; TODO consider making a variant that externalizes the threadpool to attain full laziness.
+(defn map-exec
+  "an asynchronous implementation of `map`
+  returns a vector of the asynchronous evaluation of `f` applied to members of the collection `coll`
+  will block until all asynchronous evaluation completes.
+  Intended for use on main thread. More efficient utilization of thread pool than `map-async`.
+  Not fully lazy, however.
+  `f` single-argument function
+  `n` parallelization parameter
+  `coll` collection applied to the function `f`"
+  ([f coll]
+   (map-exec
+     f
+     (.. Runtime getRuntime availableProcessors)
+     coll))
+  ([f n coll]
+   (let [execs (Executors/newFixedThreadPool n)
+         rs (->> coll
+                 (map #(.submit execs (partial f %)))
+                 (mapv #(try
+                          @%
+                          (catch Throwable e (throw e)))))]
+     (.shutdown execs)
+     rs)))

@@ -5,7 +5,7 @@ Clojure library of sundry utility functions and macros
 ## Artifact
 
 via Clojars:
-`[waffletower/serum "0.9.0"]`
+`[waffletower/serum "0.10.0"]`
 
 ## Macros
 
@@ -52,11 +52,11 @@ to the first argument of the function `f`:
 
 ## Tests
 
-`lein midje`
+`clj -Atest`
 
 ## License
 
-Copyright © 2017-2022+ Christopher Penrose
+Copyright © 2017-2023+ Christopher Penrose
 
 Distributed under the Eclipse Public License either version 1.0 or (at
 your option) any later version.

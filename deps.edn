@@ -1,5 +1,7 @@
 {:paths ["src"]
  :deps {org.clojure/clojure {:mvn/version "1.10.3"}
         org.clojure/core.async {:mvn/version "1.5.648"}
-        org.clojure/tools.logging {:mvn/version "1.2.4"}
-        camel-snake-kebab/camel-snake-kebab {:mvn/version "0.4.3"}}}
+        camel-snake-kebab/camel-snake-kebab {:mvn/version "0.4.3"}}
+ :aliases {:test {:extra-paths ["test"]
+                  :extra-deps {io.github.cognitect-labs/test-runner {:git/tag "v0.5.1" :git/sha "dfb30dd"}}
+                  :main-opts ["-m" "cognitect.test-runner"]}}}
