@@ -10,5 +10,4 @@
                                           :username :env/clojars_user
                                           :password :env/clojars_password}]]
   :profiles {:uberjar {:aot :all}
-             :dev {:dependencies [[midje "1.10.5"]]
-                   :plugins [[lein-midje "3.2.1"]]}})
+             :dev {}})
