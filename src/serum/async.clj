@@ -109,3 +109,45 @@
                           (catch Throwable e (throw e)))))]
      (.shutdown execs)
      rs)))
+
+;; TODO could create a version where order could be maintained by indexing and sorting results
+(defn disorder-exec
+  "asynchronously executes `f` upon members of `coll`.
+  does not serially block on task (`java.util.concurrent.FutureTask`) de-referencing.
+  only de-references tasks which are complete.
+  order of output collection does not correspond to order of input.
+  Imperative, not lazy.
+  `f` single-argument function
+  `n` parallelization parameter
+  `w` main thread polling wait in milliseconds between completion checks (`.isDone`)
+      `nil` skips wait - `10 ms` default
+  `coll` collection applied to the function `f`"
+  ([f coll]
+   (disorder-exec
+     f
+     (.. Runtime getRuntime availableProcessors)
+     coll))
+  ([f n coll]
+   (disorder-exec f n 10 coll))
+  ([f n w coll]
+   (let [execs (Executors/newFixedThreadPool n)
+         ts (map #(.submit execs (partial f %)) coll)
+         outs (loop [curs ts
+                     sts {:outs []}]
+                (let [{:keys [tasks outs]} (reduce
+                                             (fn [acc cur]
+                                               (if (.isDone cur)
+                                                 (update acc :outs conj (try
+                                                                          @cur
+                                                                          (catch Throwable e (throw e))))
+                                                 (update acc :tasks conj cur)))
+                                             sts
+                                             curs)]
+                  (if (not-empty tasks)
+                    (do
+                      (when w
+                        (Thread/sleep w))
+                      (recur tasks {:outs outs}))
+                    outs)))]
+     (.shutdown execs)
+     outs)))
