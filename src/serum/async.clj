@@ -104,9 +104,7 @@
    (let [execs (Executors/newFixedThreadPool n)
          rs (->> coll
                  (map #(.submit execs (partial f %)))
-                 (mapv #(try
-                          @%
-                          (catch Throwable e (throw e)))))]
+                 (mapv deref))]
      (.shutdown execs)
      rs)))
 
@@ -137,9 +135,7 @@
                 (let [{:keys [tasks outs]} (reduce
                                              (fn [acc cur]
                                                (if (.isDone cur)
-                                                 (update acc :outs conj (try
-                                                                          @cur
-                                                                          (catch Throwable e (throw e))))
+                                                 (update acc :outs conj @cur)
                                                  (update acc :tasks conj cur)))
                                              sts
                                              curs)]
