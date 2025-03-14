@@ -104,8 +104,88 @@
    (let [execs (Executors/newFixedThreadPool n)
          rs (->> coll
                  (map #(.submit execs (partial f %)))
-                 (mapv #(try
-                          @%
-                          (catch Throwable e (throw e)))))]
+                 (mapv deref))]
      (.shutdown execs)
      rs)))
+
+;; TODO could create a version where order could be maintained by indexing and sorting results
+(defn disorder-exec
+  "asynchronously executes `f` upon members of `coll`.
+  does not serially block on task (`java.util.concurrent.FutureTask`) de-referencing.
+  only de-references tasks which are complete.
+  order of output collection does not correspond to order of input.
+  Imperative, not lazy.
+  `f` single-argument function
+  `opts` clojure hashmap containing the following key/value pairs:
+    `:pool-count` thread pool thread count parameter
+    `:poll-millis` main thread polling wait in milliseconds between completion checks (`.isDone`)
+                   `nil` skips wait (with stack overflow risk) - `10 ms` default
+  `coll` collection applied to the function `f`"
+
+  ([f coll]
+   (disorder-exec
+     f
+     {:pool-count (.. Runtime getRuntime availableProcessors)
+      :poll-millis 10}
+     coll))
+
+  ([f opts coll]
+   (let [{:keys [pool-count poll-millis]} opts
+         execs (Executors/newFixedThreadPool pool-count)
+         ts (map #(.submit execs (partial f %)) coll)
+         outs (loop [curs ts
+                     sts {:outs []}]
+                (let [{:keys [tasks outs]} (reduce
+                                             (fn [acc cur]
+                                               (if (.isDone cur)
+                                                 (update acc :outs conj @cur)
+                                                 (update acc :tasks conj cur)))
+                                             sts
+                                             curs)]
+                  (if (not-empty tasks)
+                    (do
+                      (when poll-millis
+                        (Thread/sleep poll-millis))
+                      (recur tasks {:outs outs}))
+                    outs)))]
+     (.shutdown execs)
+     outs)))
+
+(defn side-exec
+  "asynchronously executes `f` upon members of `coll` without retention of results.
+  does not serially block on task (`java.util.concurrent.FutureTask`) de-referencing.
+  only de-references tasks which are complete.
+  Imperative, not lazy.
+  `f` single-argument function
+  `opts` clojure hashmap containing the following key/value pairs:
+    `:pool-count` thread pool thread count parameter
+    `:poll-millis` main thread polling wait in milliseconds between completion checks (`.isDone`)
+                   `nil` skips wait (with stack overflow risk) - `10 ms` default
+  `coll` collection applied to the function `f`"
+
+  ([f coll]
+   (side-exec
+     f
+     {:pool-count (.. Runtime getRuntime availableProcessors)
+      :poll-millis 10}
+     coll))
+
+  ([f opts coll]
+   (let [{:keys [pool-count poll-millis]} opts
+         execs (Executors/newFixedThreadPool pool-count)
+         ts (map #(.submit execs (partial f %)) coll)
+         outs (loop [curs ts]
+                (let [tasks (reduce
+                              (fn [acc cur]
+                                (if (.isDone cur)
+                                  (do @cur
+                                      acc)
+                                  (conj acc cur)))
+                              []
+                              curs)]
+                  (when (not-empty tasks)
+                    (when poll-millis
+                      (Thread/sleep poll-millis))
+                    (recur tasks))))]
+     (.shutdown execs)
+     outs)))
