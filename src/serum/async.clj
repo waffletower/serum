@@ -116,19 +116,22 @@
   order of output collection does not correspond to order of input.
   Imperative, not lazy.
   `f` single-argument function
-  `n` parallelization parameter
-  `w` main thread polling wait in milliseconds between completion checks (`.isDone`)
-      `nil` skips wait - `10 ms` default
+  `opts` clojure hashmap containing the following key/value pairs:
+    `:pool-count` thread pool thread count parameter
+    `:poll-millis` main thread polling wait in milliseconds between completion checks (`.isDone`)
+                   `nil` skips wait (with stack overflow risk) - `10 ms` default
   `coll` collection applied to the function `f`"
+
   ([f coll]
    (disorder-exec
      f
-     (.. Runtime getRuntime availableProcessors)
+     {:pool-count (.. Runtime getRuntime availableProcessors)
+      :poll-millis 10}
      coll))
-  ([f n coll]
-   (disorder-exec f n 10 coll))
-  ([f n w coll]
-   (let [execs (Executors/newFixedThreadPool n)
+
+  ([f opts coll]
+   (let [{:keys [pool-count poll-millis]} opts
+         execs (Executors/newFixedThreadPool pool-count)
          ts (map #(.submit execs (partial f %)) coll)
          outs (loop [curs ts
                      sts {:outs []}]
@@ -141,8 +144,8 @@
                                              curs)]
                   (if (not-empty tasks)
                     (do
-                      (when w
-                        (Thread/sleep w))
+                      (when poll-millis
+                        (Thread/sleep poll-millis))
                       (recur tasks {:outs outs}))
                     outs)))]
      (.shutdown execs)
