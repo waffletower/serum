@@ -47,3 +47,22 @@
          (sut/map-exec lower-case ["Cubby" "Slime" "Cache"])))
   (is (thrown? Exception
         (sut/map-exec (partial / 1) [1 0 2]))))
+
+(deftest disorder-exec
+  (is (= #{"cubby" "slime" "cache"}
+         (-> (sut/disorder-exec lower-case ["Cubby" "Slime" "Cache"])
+             set)))
+  (is (thrown? Exception
+        (sut/disorder-exec (partial / 1) [1 0 2]))))
+
+(deftest side-exec
+  (let [st (atom [])]
+    (is (= #{"cubby" "slime" "cache"}
+           (do (sut/side-exec
+                 (comp
+                   #(swap! st conj %)
+                   lower-case)
+                 ["Cubby" "Slime" "Cache"])
+               (set @st)))))
+  (is (thrown? Exception
+        (sut/side-exec (partial / 1) [1 0 2]))))
